@@ -7,7 +7,7 @@ ros::NodeHandle nh;
 
 float current_velocity = 0.0;
 float target_velocity = 0.0;
-unsigned long prev_time = 0;  // Move prev_time out of the loop
+unsigned long prev_time = 0;  
 
 class PID {
 private:
@@ -85,32 +85,32 @@ public:
     }
 
     void pid_ros_loop() {
-        nh.spinOnce();  // Process ROS messages
+
 
         unsigned long current_time = millis();
-        float dt = (current_time - prev_time) / 1000.0;  // Calculate dt in seconds
+        float time_difference = (current_time - prev_time) / 1000.0;  
 
-        if (dt >= 0.01) {  // Ensure dt is at least 10 ms (to avoid too fast processing)
+        if (time_difference >= 0.01) {  
             float pid_output = calculate(target_velocity, current_velocity, dt);
 
-            // Update cmd_vel message with the PID output
+            
             cmd_vel_msg.linear.x = pid_output;
 
-            // Publish the command velocity
+        
             cmd_vel_pub.publish(&cmd_vel_msg);
 
-            prev_time = current_time;  // Update prev_time to the current time
+            prev_time = current_time;  
         }
     }
 };
 
-// Create global instance of PID_ROS
-PID_ROS pid_ros(0.0, 0.0, 0.0);  // Initializing with 0 for Kp, Ki, Kd
+
+PID_ROS pid_ros(0.0, 0.0, 0.0);  
 
 void setup() {
-    pid_ros.pid_ros_initializer();  // Initialize ROS communication
+    pid_ros.pid_ros_initializer();  
 }
 
 void loop() {
-    pid_ros.pid_ros_loop();  // Execute control loop
+    pid_ros.pid_ros_loop();  
 }
